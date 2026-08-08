@@ -32,6 +32,51 @@ Windows shortcut: double-click **`iniciar.bat`** — it installs dependencies (f
 
 Open `http://localhost:5199` in **two or more tabs/machines** (2 players minimum) — or play solo against a **bot** (add an AI opponent in the room). Create a room, mark yourself "Ready", and the host starts the match.
 
+## Isolated local sandbox (macOS + OrbStack)
+
+For an untrusted fork, use the production-style sandbox instead of running Node
+directly on the Mac. It builds in Docker, runs only at
+`http://127.0.0.1:8080`, has no host-directory mounts at runtime, and uses a
+read-only filesystem with dropped Linux capabilities. It does not start a
+Cloudflare tunnel or expose the game to the LAN. The container can still make
+outbound network connections, so it should not be considered a perfect air gap.
+
+```bash
+# Build and run the current checkout. Ctrl-C stops it.
+./scripts/sandbox.sh run
+```
+
+The first image build downloads the official Node image and npm packages. Docker
+then discards the runtime container when it stops; it does not write game files
+back to the host.
+
+### Keeping a fork current
+
+This checkout initially points directly to the original project. Set up a
+personal GitHub fork once (the command creates/configures remotes but does not
+push your local commits):
+
+```bash
+./scripts/sandbox.sh setup-fork
+# Review and deliberately publish any local work:
+git push -u origin main
+```
+
+For regular updates, use the conservative flow below. `check` only fetches and
+shows incoming commits; `update --yes` works only with a clean tree, updates
+from upstream, preserves fork-only commits by rebasing them when necessary,
+pushes with `--force-with-lease`, and rebuilds the sandbox.
+
+```bash
+./scripts/sandbox.sh check
+./scripts/sandbox.sh update --yes
+./scripts/sandbox.sh run
+```
+
+If a rebase encounters a conflict, the helper stops before it pushes or
+rebuilds. Resolve the conflict deliberately, then continue the rebase and run
+the sandbox build again.
+
 ## Hosting over the internet
 
 You can expose the game publicly with a Cloudflare Tunnel (HTTPS, no need to open a port on your router). There are two ways:

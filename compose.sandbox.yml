@@ -1,0 +1,23 @@
+services:
+  game:
+    build:
+      context: .
+      dockerfile: Dockerfile.sandbox
+    init: true
+    read_only: true
+    user: node
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 256
+    mem_limit: 768m
+    cpus: 2
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m,mode=1777
+    environment:
+      HOME: /tmp/home
+      NODE_ENV: production
+      PORT: "8080"
+    ports:
+      - "127.0.0.1:8080:8080"

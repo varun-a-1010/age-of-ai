@@ -1,0 +1,19 @@
+# Keep build contexts small and make sure local credentials never reach Docker.
+.git
+.claude
+node_modules
+**/node_modules
+client/dist
+server/dist
+*.log
+.env
+.env.*
+.cloudflared
+.tunnel
+online-games
+Nova pasta (2)
+world-of-claudecraft-main
+_sprites_backup_procedural-era-set
+art-in
+image
+Gemini_Generated_Image_*.png
